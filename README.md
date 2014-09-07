@@ -1,2 +1,2 @@
-Bimax2
+Bimax 2
 ======
