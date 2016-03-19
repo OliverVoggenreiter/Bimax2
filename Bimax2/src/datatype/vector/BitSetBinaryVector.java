@@ -19,7 +19,9 @@
 
 package datatype.vector;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -159,6 +161,15 @@ public class BitSetBinaryVector implements BinaryVector {
 	@Override
 	public String toString() {
 		return "BitSetBinaryVector [data=" + data + "]";
+	}
+
+	@Override
+	public Collection<Integer> toIntegerCollection() {
+		Collection<Integer> collection = new ArrayList<>(data.cardinality());
+		for(Integer element : this) {
+			collection.add(element);
+		}
+		return collection;
 	}
 
 }

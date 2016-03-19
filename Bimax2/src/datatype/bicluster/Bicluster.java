@@ -20,19 +20,16 @@
 package datatype.bicluster;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Iterator;
 
 import datatype.vector.BinaryVector;
 
 public interface Bicluster extends Serializable, Cloneable {
 
-	public BinaryVector getRows();
+	public Collection<Integer> getRows();
 
-	public BinaryVector getColumns();
-
-	public Iterator<Integer> getRowIterator();
-
-	public Iterator<Integer> getColumnIterator();
+	public Collection<Integer> getColumns();
 
 	public int getNumberOfRows();
 
@@ -48,10 +45,8 @@ public interface Bicluster extends Serializable, Cloneable {
 
 	public void addColumn(int columnIndex);
 
-	public void addRows(BinaryVector rows);
+	public void addRows(Collection<Integer> rows);
 
-	public void addColumns(BinaryVector columns);
-
-	public Bicluster clone();
+	public void addColumns(Collection<Integer> columns);
 
 }

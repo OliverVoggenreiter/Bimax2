@@ -20,6 +20,7 @@
 package datatype.matrix;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import datatype.vector.BinaryVector;
 import datatype.vector.BitSetBinaryVector;
@@ -37,17 +38,14 @@ public class BitSetBinaryMatrix implements BinaryMatrix {
 	}
 
 	// private constructor, used for efficient cloning
-	private BitSetBinaryMatrix(int numRows, int numColumns,
-			BitSetBinaryVector[] data) {
+	private BitSetBinaryMatrix(int numRows, int numColumns, BitSetBinaryVector[] data) {
 		this.numRows = numRows;
 		this.numColumns = numColumns;
 		this.data = data;
 	}
 
-	private BitSetBinaryVector[] createMatrix(int numRows,
-			int numColumns) {
-		BitSetBinaryVector[] matrix =
-				new BitSetBinaryVector[numRows];
+	private BitSetBinaryVector[] createMatrix(int numRows, int numColumns) {
+		BitSetBinaryVector[] matrix = new BitSetBinaryVector[numRows];
 		for (int iRow = 0; iRow < numRows; iRow++) {
 			matrix[iRow] = new BitSetBinaryVector(numColumns);
 		}
@@ -70,8 +68,7 @@ public class BitSetBinaryMatrix implements BinaryMatrix {
 			throw new IndexOutOfBoundsException("invalid rowIndex");
 		}
 		if (columnIndex >= numColumns || columnIndex < 0) {
-			throw new IndexOutOfBoundsException(
-					"invalid columnIndex");
+			throw new IndexOutOfBoundsException("invalid columnIndex");
 		}
 		return data[rowIndex].get(columnIndex);
 	}
@@ -82,8 +79,7 @@ public class BitSetBinaryMatrix implements BinaryMatrix {
 			throw new IndexOutOfBoundsException("invalid rowIndex");
 		}
 		if (columnIndex >= numColumns || columnIndex < 0) {
-			throw new IndexOutOfBoundsException(
-					"invalid columnIndex");
+			throw new IndexOutOfBoundsException("invalid columnIndex");
 		}
 		data[rowIndex].set(columnIndex, value);
 	}
@@ -107,35 +103,14 @@ public class BitSetBinaryMatrix implements BinaryMatrix {
 	}
 
 	@Override
-	public void transpose() {
-		BitSetBinaryVector[] transposed =
-				createMatrix(numColumns, numRows);
-
-		for (int iRow = 0; iRow < numRows; iRow++) {
-			for (int iColumn = 0; iColumn < numColumns; iColumn++) {
-				transposed[iColumn].set(iRow, data[iRow]
-						.get(iColumn));
-			}
-		}
-		data = transposed;
-		int t = numRows;
-		numRows = numColumns;
-		numColumns = t;
-	}
-
-	@Override
-	public BinaryMatrix getSubMatrix(BinaryVector rows,
-			BinaryVector columns) {
-		BitSetBinaryMatrix subMatrix =
-				new BitSetBinaryMatrix(rows.cardinality(), columns
-						.cardinality());
+	public BinaryMatrix getSubMatrix(Collection<Integer> rows, Collection<Integer> columns) {
+		BitSetBinaryMatrix subMatrix = new BitSetBinaryMatrix(rows.size(), columns.size());
 
 		int dstRowIndex = 0;
 		for (int srcRowIndex : rows) {
 			int dstColumnIndex = 0;
 			for (int srcColumnIndex : columns) {
-				subMatrix.set(dstRowIndex, dstColumnIndex, this.get(
-						srcRowIndex, srcColumnIndex));
+				subMatrix.set(dstRowIndex, dstColumnIndex, this.get(srcRowIndex, srcColumnIndex));
 				dstColumnIndex++;
 			}
 			dstRowIndex++;
@@ -144,34 +119,21 @@ public class BitSetBinaryMatrix implements BinaryMatrix {
 	}
 
 	@Override
-	public BinaryMatrix getSubRows(BinaryVector rows) {
-		BitSetBinaryVector[] subData =
-				new BitSetBinaryVector[rows.cardinality()];
+	public BinaryMatrix getSubRows(Collection<Integer> rows) {
+		BitSetBinaryVector[] subData = new BitSetBinaryVector[rows.size()];
 
 		int dstRowIndex = 0;
 		for (int srcRowIndex : rows) {
 			subData[dstRowIndex] = data[srcRowIndex].clone();
 			dstRowIndex++;
 		}
-		return new BitSetBinaryMatrix(rows.cardinality(),
-				numColumns, subData);
+		return new BitSetBinaryMatrix(rows.size(), numColumns, subData);
 	}
 
 	@Override
-	public BinaryMatrix getSubColumns(BinaryVector columns) {
+	public BinaryMatrix getSubColumns(Collection<Integer> columns) {
 		BinaryVector rows = new BitSetBinaryVector(numRows, true);
-		return getSubMatrix(rows, columns);
-	}
-
-	@Override
-	public BitSetBinaryMatrix clone() {
-		BitSetBinaryVector[] clonedData =
-				new BitSetBinaryVector[numRows];
-		for (int iRow = 0; iRow < numRows; iRow++) {
-			clonedData[iRow] = data[iRow].clone();
-		}
-		return new BitSetBinaryMatrix(numRows, numColumns,
-				clonedData);
+		return getSubMatrix(rows.toIntegerCollection(), columns);
 	}
 
 	@Override
@@ -204,9 +166,7 @@ public class BitSetBinaryMatrix implements BinaryMatrix {
 
 	@Override
 	public String toString() {
-		return "BitSetBinaryMatrix [numRows=" + numRows
-				+ ", numColumns=" + numColumns + ", data="
-				+ Arrays.toString(data) + "]";
+		return "BitSetBinaryMatrix [numRows=" + numRows + ", numColumns=" + numColumns + ", data=" + Arrays.toString(data) + "]";
 	}
 
 }

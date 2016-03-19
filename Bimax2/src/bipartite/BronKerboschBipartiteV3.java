@@ -28,17 +28,13 @@ public class BronKerboschBipartiteV3 extends BronKerboschBipartiteV2 {
 	@Override
 	protected void findBiclusters() {
 
-		int[] vert =
-				DegeneracyOrdering.orderGraph(inputMatrix, true);
+		int[] vert = DegeneracyOrdering.orderGraph(inputMatrix, true);
 
 		// row nodes have indices between [0, numberOfRows) in vert
-		Nodes rowsData =
-				new Nodes(NodeType.ROW, numRows, vert, 0, numRows);
+		Nodes rowsData = new Nodes(NodeType.ROW, numRows, vert, 0, numRows);
 		// col nodes have indices between [numberOfRows, numberOfRows
 		// + numberOfColumns) in vert
-		Nodes colsData =
-				new Nodes(NodeType.COL, numCols, vert, numRows,
-						numRows + numCols);
+		Nodes colsData = new Nodes(NodeType.COL, numCols, vert, numRows, numRows + numCols);
 
 		bkv3(rowsData, colsData, vert);
 	}

@@ -24,6 +24,7 @@ import java.util.BitSet;
 import java.util.List;
 
 import util.AdjacencyMatrixPreprocessor;
+import util.BinaryMatrixFactory;
 import datatype.NodeType;
 import datatype.Nodes;
 import datatype.Pivot;
@@ -34,8 +35,7 @@ import datatype.matrix.BinaryMatrix;
 /**
  * Bron-Kerbosch Algorithm (Version 2) adapted for bipartite graphs.
  */
-public class BronKerboschBipartiteV2 implements
-BronKerboschBipartite {
+public class BronKerboschBipartiteV2 implements BronKerboschBipartite {
 
 	private static final BitSet EMPTY_BITSET = new BitSet();
 
@@ -66,8 +66,7 @@ BronKerboschBipartite {
 	private List<Integer> compsubRows = new ArrayList<Integer>();
 	private List<Integer> compsubCols = new ArrayList<Integer>();
 
-	protected List<Bicluster> biclusters =
-			new ArrayList<Bicluster>();
+	protected List<Bicluster> biclusters = new ArrayList<Bicluster>();
 
 	// total count of the number of biclusters
 	protected long numBiclusters = 0;
@@ -76,52 +75,37 @@ BronKerboschBipartite {
 	private long maxBiclusters = Long.MAX_VALUE;
 
 	/*
-	 * Method for calling a biclustering of the input matrix with
-	 * given minimum size restrictions on the number of rows and
-	 * columns for each bicluster.
+	 * Method for calling a biclustering of the input matrix with given minimum size restrictions on the number of rows and columns for each
+	 * bicluster.
 	 */
 	@Override
-	public List<Bicluster> findBiclusters(
-			BinaryMatrix connectivityMatrix) {
-		return findBiclusters(connectivityMatrix, EMPTY_BITSET,
-				EMPTY_BITSET);
+	public List<Bicluster> findBiclusters(BinaryMatrix connectivityMatrix, BinaryMatrixFactory factory) {
+		return findBiclusters(connectivityMatrix, EMPTY_BITSET, EMPTY_BITSET, factory);
 	}
 
 	/*
-	 * Method for calling a biclustering of the input matrix
-	 * conditioned on the occurence of at least one row from
-	 * 'requiredRows' and one column from 'requiredColumns' being in
-	 * each bicluster.
+	 * Method for calling a biclustering of the input matrix conditioned on the occurence of at least one row from 'requiredRows' and one
+	 * column from 'requiredColumns' being in each bicluster.
 	 */
 	@Override
-	public List<Bicluster> findBiclusters(
-			BinaryMatrix connectivityMatrix, BitSet requiredRows,
-			BitSet requiredCols) {
-		boolean validInput =
-				initialize(connectivityMatrix, requiredRows,
-						requiredCols);
+	public List<Bicluster> findBiclusters(BinaryMatrix connectivityMatrix, BitSet requiredRows, BitSet requiredCols, BinaryMatrixFactory factory) {
+		boolean validInput = initialize(connectivityMatrix, requiredRows, requiredCols, factory);
 		if (validInput) {
 			findBiclusters();
 		}
 		return biclusters;
 	}
 
-	private boolean initialize(BinaryMatrix connectivityMatrix,
-			BitSet requiredRows, BitSet requiredCols) {
+	private boolean initialize(BinaryMatrix connectivityMatrix, BitSet requiredRows, BitSet requiredCols, BinaryMatrixFactory factory) {
 
 		if (connectivityMatrix == null) {
-			throw new IllegalArgumentException(
-					"connectivityMatrix must not be null");
+			throw new IllegalArgumentException("connectivityMatrix must not be null");
 		}
-		if (minRows <= 0
-				|| minRows > connectivityMatrix.getNumRows()) {
-			throw new IllegalArgumentException(
-					"invalid minRows value");
+		if (minRows <= 0 || minRows > connectivityMatrix.getNumRows()) {
+			throw new IllegalArgumentException("invalid minRows value");
 		}
-		if (minCols <= 0
-				|| minCols > connectivityMatrix.getNumColumns()) {
-			throw new IllegalArgumentException(
-					"invalid minCols value");
+		if (minCols <= 0 || minCols > connectivityMatrix.getNumColumns()) {
+			throw new IllegalArgumentException("invalid minCols value");
 		}
 
 		this.rowMapId = new int[connectivityMatrix.getNumRows()];
@@ -130,11 +114,8 @@ BronKerboschBipartite {
 		biclusters = new ArrayList<Bicluster>();
 		numBiclusters = 0;
 
-		this.inputMatrix =
-				AdjacencyMatrixPreprocessor.reduce(
-						connectivityMatrix, minRows, minCols,
-						requiredRows, requiredCols, rowMapId,
-						colMapId);
+		this.inputMatrix = AdjacencyMatrixPreprocessor.reduce(connectivityMatrix, minRows, minCols, requiredRows, requiredCols, rowMapId,
+				colMapId, factory);
 
 		if (inputMatrix != null) {
 			numRows = inputMatrix.getNumRows();
@@ -150,8 +131,7 @@ BronKerboschBipartite {
 	}
 
 	/**
-	 * Main recursive call of algorithm. Prerequisite: there are
-	 * candidate nodes in either rows or columns yet to be processed.
+	 * Main recursive call of algorithm. Prerequisite: there are candidate nodes in either rows or columns yet to be processed.
 	 */
 	private long bkv2(Nodes rows, Nodes columns) {
 
@@ -164,8 +144,7 @@ BronKerboschBipartite {
 		long biclustersFound = 0;
 		Pivot pivot = new Pivot();
 
-		if (columns.candidatesEnd > columns.notEnd
-				&& rows.candidatesEnd > rows.notEnd) {
+		if (columns.candidatesEnd > columns.notEnd && rows.candidatesEnd > rows.notEnd) {
 			// look if pivot can be row
 			pivot.findPivot(rows, columns, inputMatrix);
 			// look if pivot can be column
@@ -185,45 +164,35 @@ BronKerboschBipartite {
 
 		if (pivot.pivotFromP == true) {
 			if (pivot.selType.equals(NodeType.ROW)) {
-				biclustersFound +=
-						extendSelection(rows, columns, selectedNode);
+				biclustersFound += extendSelection(rows, columns, selectedNode);
 			} else {
-				biclustersFound +=
-						extendSelection(columns, rows, selectedNode);
+				biclustersFound += extendSelection(columns, rows, selectedNode);
 			}
 		}
 		if (pivot.pivotType.equals(NodeType.ROW)) {
 			for (node = pivot.minDisconnections; node >= 1; node--) {
 				for (selectedNode = columns.notEnd; selectedNode < columns.candidatesEnd
-						&& inputMatrix.get(pivot.pivot,
-								columns.nodes[selectedNode]); selectedNode++) {
+						&& inputMatrix.get(pivot.pivot, columns.nodes[selectedNode]); selectedNode++) {
 					;
 				}
-				biclustersFound +=
-						extendSelection(columns, rows, selectedNode);
+				biclustersFound += extendSelection(columns, rows, selectedNode);
 			}
 		} else {
 			for (node = pivot.minDisconnections; node >= 1; node--) {
 				for (selectedNode = rows.notEnd; selectedNode < rows.candidatesEnd
-						&& inputMatrix.get(
-								rows.nodes[selectedNode],
-								pivot.pivot); selectedNode++) {
+						&& inputMatrix.get(rows.nodes[selectedNode], pivot.pivot); selectedNode++) {
 					;
 				}
-				biclustersFound +=
-						extendSelection(rows, columns, selectedNode);
+				biclustersFound += extendSelection(rows, columns, selectedNode);
 			}
 		}
 		return biclustersFound;
 	}
 
 	/**
-	 * The selected node is from the set selectedSet and it will be
-	 * added to the X set. The X,P sets are updated for both rows and
-	 * columns.
+	 * The selected node is from the set selectedSet and it will be added to the X set. The X,P sets are updated for both rows and columns.
 	 */
-	protected long extendSelection(Nodes selectedSet,
-			Nodes checkSet, int s) {
+	protected long extendSelection(Nodes selectedSet, Nodes checkSet, int s) {
 		long biclustersFound = 0;
 		int p = selectedSet.nodes[s];
 		selectedSet.nodes[s] = selectedSet.nodes[selectedSet.notEnd];
@@ -250,8 +219,7 @@ BronKerboschBipartite {
 			// intersect P with neighbors of the selected node
 			for (int i = checkSet.notEnd; i < checkSet.candidatesEnd; i++) {
 				if (inputMatrix.get(sel, checkSet.nodes[i]))
-					newCheck[newCandidateEndCheck++] =
-					checkSet.nodes[i];
+					newCheck[newCandidateEndCheck++] = checkSet.nodes[i];
 			}
 			break;
 		case COL:
@@ -263,8 +231,7 @@ BronKerboschBipartite {
 			newCandidateEndCheck = newNotEndCheck;
 			for (int i = checkSet.notEnd; i < checkSet.candidatesEnd; i++) {
 				if (inputMatrix.get(checkSet.nodes[i], sel))
-					newCheck[newCandidateEndCheck++] =
-					checkSet.nodes[i];
+					newCheck[newCandidateEndCheck++] = checkSet.nodes[i];
 			}
 			break;
 		default:
@@ -285,31 +252,23 @@ BronKerboschBipartite {
 			compsubRows.add(sel);
 			cntRowsInClique++;
 			hasOtherNodes = cntColsInClique > 0;
-			totRows =
-					newCandidateEndSelected - newNotEndSelected
-					+ cntRowsInClique;
-			totCols =
-					newCandidateEndCheck - newNotEndCheck
-					+ cntColsInClique;
+			totRows = newCandidateEndSelected - newNotEndSelected + cntRowsInClique;
+			totCols = newCandidateEndCheck - newNotEndCheck + cntColsInClique;
 			break;
 		case COL:
 			compsubCols.add(sel);
 			cntColsInClique++;
 			hasOtherNodes = cntRowsInClique > 0;
-			totRows =
-					newCandidateEndCheck - newNotEndCheck
-					+ cntRowsInClique;
-			totCols =
-					newCandidateEndSelected - newNotEndSelected
-					+ cntColsInClique;
+			totRows = newCandidateEndCheck - newNotEndCheck + cntRowsInClique;
+			totCols = newCandidateEndSelected - newNotEndSelected + cntColsInClique;
 			break;
 		default:
 			break;
 		}
 
 		if (totRows >= minRows && totCols >= minCols) {
-			if (((newCandidateEndSelected == 0 && newCandidateEndCheck == 0)
-					|| (newCandidateEndSelected == 0 && newNotEndCheck == 0) || (newCandidateEndCheck == 0 && newNotEndSelected == 0))) {
+			if (((newCandidateEndSelected == 0 && newCandidateEndCheck == 0) || (newCandidateEndSelected == 0 && newNotEndCheck == 0)
+					|| (newCandidateEndCheck == 0 && newNotEndSelected == 0))) {
 				numBiclusters++;
 				biclustersFound++;
 				Bicluster bc = new BitSetBicluster();
@@ -337,50 +296,31 @@ BronKerboschBipartite {
 				}
 				biclusters.add(bc);
 			} else {
-				boolean hasCandidatesPivot =
-						(newNotEndSelected < newCandidateEndSelected);
-				boolean hasCandidatesCheck =
-						(newNotEndCheck < newCandidateEndCheck);
+				boolean hasCandidatesPivot = (newNotEndSelected < newCandidateEndSelected);
+				boolean hasCandidatesCheck = (newNotEndCheck < newCandidateEndCheck);
 
-				if ((hasCandidatesPivot && hasCandidatesCheck)
-						|| // we have candidates in rows and cols
-						(hasCandidatesPivot && !hasCandidatesCheck
-								&& hasOtherNodes && newNotEndSelected == 0)
-								|| (hasCandidatesCheck
-										&& !hasCandidatesPivot && newNotEndCheck == 0)) {
+				if ((hasCandidatesPivot && hasCandidatesCheck) || // we have candidates in rows and cols
+						(hasCandidatesPivot && !hasCandidatesCheck && hasOtherNodes && newNotEndSelected == 0)
+						|| (hasCandidatesCheck && !hasCandidatesPivot && newNotEndCheck == 0)) {
 
-					int[] newSelected =
-							new int[selectedSet.candidatesEnd];
+					int[] newSelected = new int[selectedSet.candidatesEnd];
 					// Update X and P for the set which contains the
 					// selected node.
 					// The selected node is eliminated from X and P,
 					// the rest of the elements are left unchanged.
-					System.arraycopy(selectedSet.nodes, 0,
-							newSelected, 0, selectedSet.notEnd);
+					System.arraycopy(selectedSet.nodes, 0, newSelected, 0, selectedSet.notEnd);
 					if (selectedSet.candidatesEnd != 0) {
-						System.arraycopy(selectedSet.nodes,
-								selectedSet.notEnd + 1, newSelected,
-								selectedSet.notEnd,
-								newCandidateEndSelected
-								- newNotEndSelected);
+						System.arraycopy(selectedSet.nodes, selectedSet.notEnd + 1, newSelected, selectedSet.notEnd,
+								newCandidateEndSelected - newNotEndSelected);
 					}
 
-					Nodes newselected =
-							new Nodes(selectedSet.nodeType,
-									newSelected,
-									newCandidateEndSelected,
-									newNotEndSelected);
-					Nodes newcheck =
-							new Nodes(checkSet.nodeType, newCheck,
-									newCandidateEndCheck,
-									newNotEndCheck);
+					Nodes newselected = new Nodes(selectedSet.nodeType, newSelected, newCandidateEndSelected, newNotEndSelected);
+					Nodes newcheck = new Nodes(checkSet.nodeType, newCheck, newCandidateEndCheck, newNotEndCheck);
 
 					if (selectedSet.nodeType.equals(NodeType.ROW)) {
-						biclustersFound +=
-								bkv2(newselected, newcheck);
+						biclustersFound += bkv2(newselected, newcheck);
 					} else {
-						biclustersFound +=
-								bkv2(newcheck, newselected);
+						biclustersFound += bkv2(newcheck, newselected);
 					}
 				}
 			}

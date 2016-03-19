@@ -24,15 +24,13 @@ import java.util.List;
 
 import datatype.bicluster.Bicluster;
 import datatype.matrix.BinaryMatrix;
+import util.BinaryMatrixFactory;
 
 public interface BronKerboschBipartite {
 
-	public abstract List<Bicluster> findBiclusters(
-			BinaryMatrix connectivityMatrix);
+	public abstract List<Bicluster> findBiclusters(BinaryMatrix connectivityMatrix, BinaryMatrixFactory factory);
 
-	public abstract List<Bicluster> findBiclusters(
-			BinaryMatrix connectivityMatrix, BitSet requiredRows,
-			BitSet requiredCols);
+	public abstract List<Bicluster> findBiclusters(BinaryMatrix connectivityMatrix, BitSet requiredRows, BitSet requiredCols, BinaryMatrixFactory factory);
 
 	public abstract void setMinRows(int minRows);
 

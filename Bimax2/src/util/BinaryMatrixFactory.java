@@ -23,7 +23,6 @@ import datatype.matrix.BinaryMatrix;
 
 public interface BinaryMatrixFactory {
 
-	public BinaryMatrix createBinaryMatrix(int numRows,
-			int numColumns);
+	public BinaryMatrix createBinaryMatrix(int numRows, int numColumns);
 
 }

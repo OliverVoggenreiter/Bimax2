@@ -25,20 +25,15 @@ import java.util.List;
 import datatype.matrix.BinaryMatrix;
 
 /**
- * @see "An O(m) Algorithm for Cores Decomposition of Networks" 2002
- *      Vladimir Batagelj, Matjaz Zaversnik
+ * @see "An O(m) Algorithm for Cores Decomposition of Networks" 2002 Vladimir Batagelj, Matjaz Zaversnik
  */
 public class DegeneracyOrdering {
 	/**
-	 * The method computes the degeneracy ordering of a bipartite
-	 * graph.
+	 * The method computes the degeneracy ordering of a bipartite graph.
 	 */
-	public static int[] orderGraph(BinaryMatrix connected,
-			boolean isBipartite) {
-		if (connected == null || connected.getNumRows() == 0
-				|| connected.getNumColumns() == 0) {
-			throw new IllegalArgumentException(
-					"Matrix is null or of size 0.");
+	public static int[] orderGraph(BinaryMatrix connected, boolean isBipartite) {
+		if (connected == null || connected.getNumRows() == 0 || connected.getNumColumns() == 0) {
+			throw new IllegalArgumentException("Matrix is null or of size 0.");
 		}
 		// Allocate enough memory for rows and columns.
 		int cntNodes = connected.getNumRows();
@@ -50,8 +45,7 @@ public class DegeneracyOrdering {
 		// Adjacency list
 		int[] degree = new int[cntNodes];
 		// Adjacency list of connections.
-		List<List<Integer>> adjL =
-				computeAdjList(connected, isBipartite, degree);
+		List<List<Integer>> adjL = computeAdjList(connected, isBipartite, degree);
 
 		int maxD = 0;
 		for (int i = 0; i < cntNodes; ++i) {
@@ -75,12 +69,9 @@ public class DegeneracyOrdering {
 	}
 
 	/***
-	 * Returns the adjacency list of a graph and also computes the
-	 * degree of each vertex.
+	 * Returns the adjacency list of a graph and also computes the degree of each vertex.
 	 */
-	private static List<List<Integer>>
-	computeAdjList(BinaryMatrix connected,
-			boolean isBipartite, int[] degree) {
+	private static List<List<Integer>> computeAdjList(BinaryMatrix connected, boolean isBipartite, int[] degree) {
 		List<List<Integer>> adjL = null;
 
 		if (isBipartite == true) { // connected is not symmetric
@@ -135,8 +126,7 @@ public class DegeneracyOrdering {
 		return adjL;
 	}
 
-	private static void computeDegeneracy(List<List<Integer>> adjL,
-			int[] degree, int[] vert, int[] pos) {
+	private static void computeDegeneracy(List<List<Integer>> adjL, int[] degree, int[] vert, int[] pos) {
 		// maximum degree of a vertex.
 		int maxDegree = degree[0];
 		for (int i : degree) {

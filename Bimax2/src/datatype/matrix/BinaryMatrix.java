@@ -20,8 +20,7 @@
 package datatype.matrix;
 
 import java.io.Serializable;
-
-import datatype.vector.BinaryVector;
+import java.util.Collection;
 
 /**
  * A fixed-size binary matrix.
@@ -40,15 +39,11 @@ public interface BinaryMatrix extends Cloneable, Serializable {
 
 	public float getDensity();
 
-	public BinaryMatrix getSubMatrix(BinaryVector rows,
-			BinaryVector columns);
+	public BinaryMatrix getSubMatrix(Collection<Integer> rows,
+			Collection<Integer> columns);
 
-	public BinaryMatrix getSubRows(BinaryVector rows);
+	public BinaryMatrix getSubRows(Collection<Integer> rows);
 
-	public BinaryMatrix getSubColumns(BinaryVector columns);
-
-	public void transpose();
-
-	public BinaryMatrix clone();
+	public BinaryMatrix getSubColumns(Collection<Integer> columns);
 
 }

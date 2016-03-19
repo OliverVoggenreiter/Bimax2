@@ -22,23 +22,19 @@ package datatype;
 import java.util.BitSet;
 
 /**
- * Class for storing the set of nodes in X u P (corresponding to rows
- * or to columns).
+ * Class for storing the set of nodes in X u P (corresponding to rows or to columns).
  **/
 public class Nodes implements Cloneable {
 
 	public NodeType nodeType;
 	/**
-	 * The nodes in X u P are stored in an array. [0,...,notEnd_-1]
-	 * are the nodes in X, [notEnd_,...,candidatesEnd_-1] are the
-	 * nodes in P.
+	 * The nodes in X u P are stored in an array. [0,...,notEnd_-1] are the nodes in X, [notEnd_,...,candidatesEnd_-1] are the nodes in P.
 	 */
 	public int[] nodes;
 	public int notEnd;
 	public int candidatesEnd;
 
-	public Nodes(NodeType nodeType, int[] nodes,
-			int candidateEndPivot, int notEndPivot) {
+	public Nodes(NodeType nodeType, int[] nodes, int candidateEndPivot, int notEndPivot) {
 		this.nodeType = nodeType;
 		this.nodes = nodes;
 		this.notEnd = notEndPivot;
@@ -46,9 +42,8 @@ public class Nodes implements Cloneable {
 	}
 
 	/**
-	 * Constructor which is called only in the beginning, before the
-	 * first call to bkv2(..)
-	 * */
+	 * Constructor which is called only in the beginning, before the first call to bkv2(..)
+	 */
 	public Nodes(NodeType nodeType, int numNodes) {
 		this.nodeType = nodeType;
 		this.notEnd = 0;
@@ -61,11 +56,9 @@ public class Nodes implements Cloneable {
 	}
 
 	/**
-	 * Constructor which is called only in the beginning, before the
-	 * first call to bkv3(..)
+	 * Constructor which is called only in the beginning, before the first call to bkv3(..)
 	 */
-	public Nodes(NodeType nodeType, int numNodes, int[] vert,
-			int first, int last) {
+	public Nodes(NodeType nodeType, int numNodes, int[] vert, int first, int last) {
 		this.nodeType = nodeType;
 		this.notEnd = 0;
 		this.candidatesEnd = numNodes;
@@ -87,8 +80,7 @@ public class Nodes implements Cloneable {
 
 		nodes = new int[numNodes];
 		int id = 0;
-		for (int n = consideredNodes.nextSetBit(0); n > -1; n =
-				consideredNodes.nextSetBit(n + 1)) {
+		for (int n = consideredNodes.nextSetBit(0); n > -1; n = consideredNodes.nextSetBit(n + 1)) {
 			nodes[id] = n;
 			id++;
 		}
@@ -96,8 +88,7 @@ public class Nodes implements Cloneable {
 
 	@Override
 	public Nodes clone() {
-		return new Nodes(nodeType, nodes.clone(), candidatesEnd,
-				notEnd);
+		return new Nodes(nodeType, nodes.clone(), candidatesEnd, notEnd);
 	}
 
 }

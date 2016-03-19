@@ -21,6 +21,7 @@ package datatype.vector;
 
 import java.io.Serializable;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -42,6 +43,8 @@ Iterable<Integer> {
 	@Override
 	public Iterator<Integer> iterator();
 
+	public Collection<Integer> toIntegerCollection();
+	
 	public BitSet getBitSet();
 
 	public void union(BinaryVector other);

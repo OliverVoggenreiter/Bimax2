@@ -22,12 +22,10 @@ package util;
 import datatype.matrix.BinaryMatrix;
 import datatype.matrix.BitSetBinaryMatrix;
 
-public class BitSetBinaryMatrixFactory implements
-BinaryMatrixFactory {
+public class BitSetBinaryMatrixFactory implements BinaryMatrixFactory {
 
 	@Override
-	public BinaryMatrix createBinaryMatrix(int numRows,
-			int numColumns) {
+	public BinaryMatrix createBinaryMatrix(int numRows, int numColumns) {
 		return new BitSetBinaryMatrix(numRows, numColumns);
 	}
 

@@ -19,9 +19,8 @@
 
 package datatype.bicluster;
 
-import java.util.Iterator;
+import java.util.Collection;
 
-import datatype.vector.BinaryVector;
 import datatype.vector.BitSetBinaryVector;
 
 public class BitSetBicluster implements Bicluster {
@@ -35,31 +34,14 @@ public class BitSetBicluster implements Bicluster {
 		columns = new BitSetBinaryVector();
 	}
 
-	// private constructor, used for efficient cloning
-	private BitSetBicluster(BitSetBinaryVector rows,
-			BitSetBinaryVector columns) {
-		this.rows = rows;
-		this.columns = columns;
+	@Override
+	public Collection<Integer> getRows() {
+		return rows.toIntegerCollection();
 	}
 
 	@Override
-	public BitSetBinaryVector getRows() {
-		return rows;
-	}
-
-	@Override
-	public BitSetBinaryVector getColumns() {
-		return columns;
-	}
-
-	@Override
-	public Iterator<Integer> getRowIterator() {
-		return rows.iterator();
-	}
-
-	@Override
-	public Iterator<Integer> getColumnIterator() {
-		return columns.iterator();
+	public Collection<Integer> getColumns() {
+		return columns.toIntegerCollection();
 	}
 
 	@Override
@@ -83,14 +65,14 @@ public class BitSetBicluster implements Bicluster {
 	}
 
 	@Override
-	public void addRows(BinaryVector rowsToAdd) {
+	public void addRows(Collection<Integer> rowsToAdd) {
 		for (Integer row : rowsToAdd) {
 			rows.set(row, true);
 		}
 	}
 
 	@Override
-	public void addColumns(BinaryVector columnsToAdd) {
+	public void addColumns(Collection<Integer> columnsToAdd) {
 		for (Integer column : columnsToAdd) {
 			columns.set(column, true);
 		}
@@ -109,13 +91,6 @@ public class BitSetBicluster implements Bicluster {
 	@Override
 	public boolean containsColumn(int columnIndex) {
 		return columns.get(columnIndex);
-	}
-
-	@Override
-	public BitSetBicluster clone() {
-		BitSetBinaryVector rowsClone = rows.clone();
-		BitSetBinaryVector columnsClone = columns.clone();
-		return new BitSetBicluster(rowsClone, columnsClone);
 	}
 
 	@Override
