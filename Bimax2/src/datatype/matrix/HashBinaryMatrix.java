@@ -1,6 +1,8 @@
 package datatype.matrix;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -67,19 +69,19 @@ public class HashBinaryMatrix implements BinaryMatrix {
 	@Override
 	public float getDensity() {
 		int count = 0;
-		for(Integer columnCount : columnCounts.values()) {
+		for (Integer columnCount : columnCounts.values()) {
 			count += columnCount;
 		}
 		return count / ((float) getNumRows() * getNumColumns());
 	}
 
 	@Override
-	//TODO: Can we do this more efficiently?
+	// TODO: Can we do this more efficiently?
 	public BinaryMatrix getSubMatrix(Collection<Integer> rows, Collection<Integer> columns) {
 		BinaryMatrix subMatrix = new HashBinaryMatrix();
-		for(int row: rows) {
-			for(int column: columns) {
-				if(get(row, column)) {
+		for (int row : rows) {
+			for (int column : columns) {
+				if (get(row, column)) {
 					subMatrix.set(row, column);
 				}
 			}
@@ -95,6 +97,37 @@ public class HashBinaryMatrix implements BinaryMatrix {
 	@Override
 	public BinaryMatrix getSubColumns(Collection<Integer> columns) {
 		return getSubMatrix(data.keySet(), columns);
+	}
+
+	@Override
+	public String toString() {
+		String output = "";
+		Set<Integer> rows = data.keySet();
+		Set<Integer> columns = columnCounts.keySet();
+		int maxCol = 0;
+		for (Integer column : columns) {
+			if (column > maxCol) {
+				maxCol = column;
+			}
+		}
+		ArrayList<Integer> list = new ArrayList<>(rows);
+		Collections.sort(list);
+		int currentRow = 0;
+		while (currentRow <= list.get(list.size() - 1)) {
+			String printRow = "";
+			if (!list.contains(currentRow)) {
+				for (int i = 0; i <= maxCol; i++) {
+					printRow += "0 ";
+				}
+			} else {
+				for (int i = 0; i <= maxCol; i++) {
+					printRow += this.get(currentRow, i) ? "1 " : "0 ";
+				}
+			}
+			currentRow++;
+			output += printRow + "\n";
+		}
+		return output;
 	}
 
 }
